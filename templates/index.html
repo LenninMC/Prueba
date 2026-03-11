@@ -1,5 +1,41 @@
-<h2>LED Rojo</h2>
-<canvas id="chartRojo" width="400" height="200"></canvas>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Monitoreo LEDs</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="top">
+    <h1>Control LEDs y gráficas</h1>
+    <a class="logout" href="/logout">Salir</a>
+  </div>
 
-<h2>LED Verde</h2>
-<canvas id="chartVerde" width="400" height="200"></canvas>
+  <div class="row">
+    <div>
+      <h3>LED Rojo</h3>
+      <button class="btn-red-on">Encender</button>
+      <button class="btn-red-off">Apagar</button>
+      <p><em>(si el hardware lo permite)</em></p>
+    </div>
+    <div>
+      <h3>LED Verde</h3>
+      <button class="btn-green-on">Encender</button>
+      <button class="btn-green-off">Apagar</button>
+      <p><em>(si el hardware lo permite)</em></p>
+    </div>
+  </div>
+
+  <h2>LED Rojo</h2>
+  <canvas id="chartRojo" width="400" height="200"></canvas>
+
+  <h2>LED Verde</h2>
+  <canvas id="chartVerde" width="400" height="200"></canvas>
+
+  <pre id="log"></pre>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
