@@ -1,0 +1,71 @@
+import socket
+import serial
+import threading
+import time
+
+SERIAL_PORT = "/dev/ttyACM0"
+BAUDRATE = 9600
+HOST = "0.0.0.0"
+PORT = 5001
+
+# Variable global para el último valor LDR
+last_ldr = None
+lock = threading.Lock()
+
+def serial_reader(ser):
+    global last_ldr
+    while True:
+        try:
+            line = ser.readline().decode('utf-8', errors='ignore').strip()
+            if line.startswith("LDR:"):
+                value = line[4:]
+                with lock:
+                    last_ldr = value
+            # Podríamos ignorar otras líneas (respuestas a comandos) o mostrarlas
+        except Exception as e:
+            print("Error en serial_reader:", e)
+            time.sleep(1)
+
+def handle_client(conn, ser):
+    with conn:
+        data = conn.recv(1024)
+        if not data:
+            return
+        cmd = data.decode("utf-8", errors="ignore").strip().upper()
+        # Aceptamos comandos: RED_ON, RED_OFF, GREEN_ON, GREEN_OFF
+        valid_cmds = {"RED_ON", "RED_OFF", "GREEN_ON", "GREEN_OFF"}
+        if cmd not in valid_cmds:
+            conn.sendall(b"ERR:CMD\n")
+            return
+        ser.write((cmd + "\n").encode("utf-8"))
+        ser.flush()
+        # Esperamos respuesta (el Arduino responde con OK... o ERR...)
+        resp = ser.readline().decode("utf-8", errors="ignore").strip()
+        if not resp:
+            resp = "ERR:TIMEOUT"
+        conn.sendall((resp + "\n").encode("utf-8"))
+
+def main():
+    ser = serial.Serial(SERIAL_PORT, BAUDRATE, timeout=1)
+    print(f"Conectado a Arduino en {SERIAL_PORT} a {BAUDRATE} baudios")
+
+    # Hilo para leer serial continuamente
+    reader_thread = threading.Thread(target=serial_reader, args=(ser,), daemon=True)
+    reader_thread.start()
+
+    # Servidor TCP para comandos
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind((HOST, PORT))
+        s.listen(1)
+        print(f"Servidor LED escuchando en {HOST}:{PORT}...")
+
+        while True:
+            conn, addr = s.accept()
+            print(f"Conexión desde {addr}")
+            # Usamos un hilo para manejar el cliente, o simplemente lo manejamos secuencialmente
+            # Como es simple, podemos manejarlo directamente
+            handle_client(conn, ser)
+
+if __name__ == "__main__":
+    main()
