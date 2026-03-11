@@ -1,8 +1,6 @@
 const log = document.getElementById("log");
-const btnRedOn = document.querySelector(".btn-red-on");
-const btnRedOff = document.querySelector(".btn-red-off");
-const btnGreenOn = document.querySelector(".btn-green-on");
-const btnGreenOff = document.querySelector(".btn-green-off");
+const valorRojoEl = document.getElementById("valor-rojo");
+const valorVerdeEl = document.getElementById("valor-verde");
 
 // Gráfica ROJA
 const ctxRojo = document.getElementById('chartRojo').getContext('2d');
@@ -11,18 +9,47 @@ let chartRojo = new Chart(ctxRojo, {
   data: {
     labels: [],
     datasets: [{
-      label: 'LED Rojo (valor analógico)',
+      label: 'LED Rojo',
       data: [],
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.1)',
-      tension: 0.1,
-      fill: false
+      borderColor: '#ff6b6b',
+      backgroundColor: 'rgba(255, 107, 107, 0.1)',
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: '#ff6b6b',
+      pointBorderColor: 'white',
+      pointRadius: 4,
+      pointHoverRadius: 6
     }]
   },
   options: {
     responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        display: false
+      }
+    },
     scales: {
-      y: { min: 0, max: 1023, title: { display: true, text: 'Valor (0-1023)' } }
+      y: {
+        min: 0,
+        max: 1023,
+        grid: {
+          color: 'rgba(0,0,0,0.05)'
+        },
+        title: {
+          display: true,
+          text: 'Valor analógico'
+        }
+      },
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          maxRotation: 45,
+          minRotation: 45
+        }
+      }
     }
   }
 });
@@ -34,42 +61,59 @@ let chartVerde = new Chart(ctxVerde, {
   data: {
     labels: [],
     datasets: [{
-      label: 'LED Verde (valor analógico)',
+      label: 'LED Verde',
       data: [],
-      borderColor: 'rgb(75, 192, 192)',
-      backgroundColor: 'rgba(75, 192, 192, 0.1)',
-      tension: 0.1,
-      fill: false
+      borderColor: '#51cf66',
+      backgroundColor: 'rgba(81, 207, 102, 0.1)',
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: '#51cf66',
+      pointBorderColor: 'white',
+      pointRadius: 4,
+      pointHoverRadius: 6
     }]
   },
   options: {
     responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        display: false
+      }
+    },
     scales: {
-      y: { min: 0, max: 1023, title: { display: true, text: 'Valor (0-1023)' } }
+      y: {
+        min: 0,
+        max: 1023,
+        grid: {
+          color: 'rgba(0,0,0,0.05)'
+        },
+        title: {
+          display: true,
+          text: 'Valor analógico'
+        }
+      },
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          maxRotation: 45,
+          minRotation: 45
+        }
+      }
     }
   }
 });
 
 function writeLog(msg) {
-  log.textContent = msg + "\n" + log.textContent;
+  if (log) {
+    log.textContent = msg + "\n" + log.textContent;
+    if (log.textContent.split('\n').length > 10) {
+      log.textContent = log.textContent.split('\n').slice(0, 10).join('\n');
+    }
+  }
 }
-
-async function setLed(led, action) {
-  const r = await fetch("/set_led", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ led: led, action: action })
-  });
-
-  const j = await r.json();
-  if (j.ok) writeLog(`${j.cmd} -> ${j.resp}`);
-  else writeLog(`ERROR -> ${j.error || j.resp}`);
-}
-
-btnRedOn.addEventListener("click", () => setLed("rojo", "on"));
-btnRedOff.addEventListener("click", () => setLed("rojo", "off"));
-btnGreenOn.addEventListener("click", () => setLed("verde", "on"));
-btnGreenOff.addEventListener("click", () => setLed("verde", "off"));
 
 // Actualizar gráficas cada segundo
 async function fetchEstado() {
@@ -78,6 +122,10 @@ async function fetchEstado() {
     const j = await r.json();
     if (j.ok) {
       const ahora = new Date().toLocaleTimeString();
+
+      // Actualizar valores en tarjetas
+      if (valorRojoEl) valorRojoEl.textContent = j.rojo;
+      if (valorVerdeEl) valorVerdeEl.textContent = j.verde;
 
       // Actualizar ROJO
       chartRojo.data.labels.push(ahora);
