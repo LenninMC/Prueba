@@ -1,80 +1,70 @@
-const log = document.getElementById("log");
-const btnRedOn = document.querySelector(".btn-red-on");
-const btnRedOff = document.querySelector(".btn-red-off");
-const btnGreenOn = document.querySelector(".btn-green-on");
-const btnGreenOff = document.querySelector(".btn-green-off");
-
-// Configuración de la gráfica
-const ctx = document.getElementById('ldrChart').getContext('2d');
-let chart = new Chart(ctx, {
+// Gráfica ROJA
+const ctxRojo = document.getElementById('chartRojo').getContext('2d');
+let chartRojo = new Chart(ctxRojo, {
   type: 'line',
   data: {
-    labels: [], // tiempo (se llenará con índices)
+    labels: [],
     datasets: [{
-      label: 'Valor LDR (0-1023)',
+      label: 'LED Rojo',
       data: [],
-      borderColor: 'rgba(75, 192, 192, 1)',
-      tension: 0.1,
-      fill: false
+      borderColor: 'rgb(255, 99, 132)',
+      tension: 0.1
     }]
   },
   options: {
     responsive: true,
-    scales: {
-      y: { min: 0, max: 1023 }
-    }
+    scales: { y: { min: 0, max: 1023 } }
   }
 });
 
-function writeLog(msg) {
-  log.textContent = msg + "\n" + log.textContent;
-}
+// Gráfica VERDE
+const ctxVerde = document.getElementById('chartVerde').getContext('2d');
+let chartVerde = new Chart(ctxVerde, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [{
+      label: 'LED Verde',
+      data: [],
+      borderColor: 'rgb(75, 192, 192)',
+      tension: 0.1
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: { y: { min: 0, max: 1023 } }
+  }
+});
 
-async function setLed(led, action) {
-  const r = await fetch("/set_led", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ led: led, action: action })
-  });
-
-  const j = await r.json();
-  if (j.ok) writeLog(`${j.cmd} -> ${j.resp}`);
-  else writeLog(`ERROR -> ${j.error || j.resp}`);
-}
-
-btnRedOn.addEventListener("click", () => setLed("rojo", "on"));
-btnRedOff.addEventListener("click", () => setLed("rojo", "off"));
-btnGreenOn.addEventListener("click", () => setLed("verde", "on"));
-btnGreenOff.addEventListener("click", () => setLed("verde", "off"));
-
-// Actualizar gráfica cada segundo
-async function fetchLDR() {
+async function fetchEstados() {
   try {
-    const r = await fetch("/api/ldr");
+    const r = await fetch("/api/estado");
     const j = await r.json();
     if (j.ok) {
-      const valor = j.valor;
-      writeLog(`LDR: ${valor}`);
-
-      // Actualizar dataset (mantener últimos 20 puntos)
-      chart.data.labels.push(chart.data.labels.length);  // índice como label
-      chart.data.datasets[0].data.push(valor);
-
-      if (chart.data.labels.length > 20) {
-        chart.data.labels.shift();
-        chart.data.datasets[0].data.shift();
+      // Actualizar ROJO
+      chartRojo.data.labels.push(new Date().toLocaleTimeString());
+      chartRojo.data.datasets[0].data.push(j.rojo);
+      if (chartRojo.data.labels.length > 20) {
+        chartRojo.data.labels.shift();
+        chartRojo.data.datasets[0].data.shift();
       }
+      chartRojo.update();
 
-      chart.update();
-    } else {
-      writeLog(`Error LDR: ${j.error}`);
+      // Actualizar VERDE
+      chartVerde.data.labels.push(new Date().toLocaleTimeString());
+      chartVerde.data.datasets[0].data.push(j.verde);
+      if (chartVerde.data.labels.length > 20) {
+        chartVerde.data.labels.shift();
+        chartVerde.data.datasets[0].data.shift();
+      }
+      chartVerde.update();
+
+      writeLog(`Rojo: ${j.rojo} | Verde: ${j.verde}`);
     }
   } catch (e) {
-    writeLog(`Error de conexión: ${e}`);
+    writeLog(`Error: ${e}`);
   }
 }
 
-// Llamar a fetchLDR cada 1 segundo
-setInterval(fetchLDR, 1000);
-// Llamar inmediatamente al cargar
-fetchLDR();
+setInterval(fetchEstados, 1000);
+fetchEstados();
