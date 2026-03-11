@@ -26,27 +26,7 @@
     <div class="main-content">
       <!-- Panel izquierdo - Estado y controles -->
       <div class="left-panel">
-        <!-- Tarjeta de luz entrante -->
-        <div class="card">
-          <div class="card-header">
-            <h3>📡 LUZ ENTRANTE (LDR)</h3>
-            <span class="badge">A0</span>
-          </div>
-          <div class="sensor-value" id="ldr-value">0</div>
-          <div class="sensor-range">0 — 1023</div>
-          <div class="threshold-indicator">
-            <div class="threshold-bar">
-              <div class="threshold-fill" id="ldr-bar" style="width: 0%"></div>
-            </div>
-            <div class="threshold-labels">
-              <span>0</span>
-              <span>Umbral</span>
-              <span>1023</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tarjeta de LEDs -->
+        <!-- Tarjeta de LEDs (ahora más prominente) -->
         <div class="card">
           <div class="card-header">
             <h3>💡 ESTADO DE LEDs</h3>
@@ -83,7 +63,7 @@
           </div>
           <div class="mode-info">
             <span class="mode-label">Fuente:</span>
-            <span class="mode-value">A0 / Umbral dinámico</span>
+            <span class="mode-value">A1 / A2</span>
           </div>
         </div>
 
@@ -116,7 +96,7 @@
             <h3>📈 MONITOREO EN TIEMPO REAL</h3>
             <div class="chart-controls">
               <span class="badge">Captura activa</span>
-              <span class="badge">A0 / Umbral</span>
+              <span class="badge">A1 / A2</span>
             </div>
           </div>
           <div class="chart-container">
@@ -131,7 +111,7 @@
                 <span class="legend-color green"></span> LED Verde (A2)
               </span>
               <span class="legend-item">
-                <span class="legend-color threshold"></span> Umbral LDR
+                <span class="legend-color threshold"></span> Umbral (512)
               </span>
             </div>
           </div>
