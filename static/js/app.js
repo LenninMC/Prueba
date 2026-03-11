@@ -1,13 +1,11 @@
 // Elementos del DOM
-const ldrValue = document.getElementById('ldr-value');
-const ldrBar = document.getElementById('ldr-bar');
 const ledRojoValor = document.getElementById('led-rojo-valor');
 const ledVerdeValor = document.getElementById('led-verde-valor');
 const ledRojoIndicator = document.getElementById('led-rojo-indicator');
 const ledVerdeIndicator = document.getElementById('led-verde-indicator');
 const ultimaActualizacion = document.getElementById('ultima-actualizacion');
 
-// Configuración del umbral (ajústalo según tu necesidad)
+// Configuración del umbral
 const UMBRAL = 512; // Mitad del rango 0-1023
 
 // Configuración de la gráfica principal
@@ -143,13 +141,6 @@ async function fetchEstado() {
     const j = await r.json();
     
     if (j.ok) {
-      // Actualizar valores LDR (usamos el promedio de rojo y verde como simulación)
-      // En un sistema real, el LDR vendría por separado
-      const ldrSimulado = Math.round((j.rojo + j.verde) / 2);
-      
-      if (ldrValue) ldrValue.textContent = ldrSimulado;
-      if (ldrBar) ldrBar.style.width = `${(ldrSimulado / 1023) * 100}%`;
-      
       // Actualizar valores de LEDs
       if (ledRojoValor) ledRojoValor.textContent = j.rojo;
       if (ledVerdeValor) ledVerdeValor.textContent = j.verde;
