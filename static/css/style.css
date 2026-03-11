@@ -1,12 +1,15 @@
 body {
   font-family: Arial, sans-serif;
   padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .row {
@@ -22,7 +25,19 @@ button {
   cursor: pointer;
   margin-right: 8px;
   margin-bottom: 8px;
+  border: none;
+  border-radius: 4px;
+  background-color: #f0f0f0;
 }
+
+button:hover {
+  background-color: #ddd;
+}
+
+.btn-red-on { background-color: #ffcccc; }
+.btn-red-off { background-color: #ff9999; }
+.btn-green-on { background-color: #ccffcc; }
+.btn-green-off { background-color: #99ff99; }
 
 pre {
   background: #111;
@@ -31,6 +46,7 @@ pre {
   min-height: 100px;
   white-space: pre-wrap;
   border-radius: 4px;
+  font-size: 12px;
 }
 
 .error {
@@ -42,6 +58,11 @@ pre {
   padding: 6px 12px;
   background: #f0f0f0;
   border-radius: 4px;
+  color: #333;
+}
+
+.logout:hover {
+  background: #ddd;
 }
 
 input {
@@ -60,4 +81,5 @@ canvas {
   max-width: 100%;
   border: 1px solid #ccc;
   margin: 20px 0;
+  background: #fafafa;
 }
