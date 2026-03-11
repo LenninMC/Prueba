@@ -1,95 +1,145 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor LEDs</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            background: #1a1a1a;
-            color: white;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .valores {
-            display: flex;
-            gap: 20px;
-            margin: 20px 0;
-            padding: 20px;
-            background: #2d2d2d;
-            border-radius: 10px;
-        }
-        .valor {
-            flex: 1;
-            text-align: center;
-            padding: 15px;
-            background: #3d3d3d;
-            border-radius: 8px;
-        }
-        .numero {
-            font-size: 32px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        .rojo { color: #ff4444; }
-        .verde { color: #00C851; }
-        .chart-container {
-            height: 400px;
-            background: #2d2d2d;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .progress-bar {
-            height: 20px;
-            background: #3d3d3d;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            width: 0%;
-            transition: width 0.3s;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Monitoreo LEDs</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>📊 Monitoreo de LEDs</h1>
-        
-        <div class="valores">
-            <div class="valor">
-                <div>🔴 LED Rojo</div>
-                <div class="numero rojo" id="led-rojo-valor">0</div>
-            </div>
-            <div class="valor">
-                <div>🟢 LED Verde</div>
-                <div class="numero verde" id="led-verde-valor">0</div>
-            </div>
-            <div class="valor">
-                <div>💡 LDR</div>
-                <div class="numero" id="ldr-valor">0</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="ldr-progress"></div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="chart-container">
-            <canvas id="mainChart"></canvas>
-        </div>
-        
-        <div style="margin-top: 20px; color: #aaa; text-align: center;">
-            Última actualización: <span id="ultima-actualizacion">--</span>
-        </div>
+  <div class="dashboard">
+    <!-- Barra superior -->
+    <div class="top-bar">
+      <div class="logo">
+        <span class="logo-icon">⏻</span>
+        <span class="logo-text">SISTEMA DE MONITOREO</span>
+      </div>
+      <div class="system-status">
+        <span class="status-indicator active"></span>
+        <span class="status-text">Sistema activo</span>
+      </div>
+      <a href="/logout" class="logout-link">⏻ Cerrar sesión</a>
     </div>
-    
-    <script src="/static/js/app.js"></script>
+
+    <!-- Contenido principal -->
+    <div class="main-content">
+      <!-- Panel izquierdo - Estado y controles -->
+      <div class="left-panel">
+        <!-- Tarjeta de luz entrante -->
+        <div class="card">
+          <div class="card-header">
+            <h3>📡 LUZ ENTRANTE (LDR)</h3>
+            <span class="badge">A0</span>
+          </div>
+          <div class="sensor-value" id="ldr-value">0</div>
+          <div class="sensor-range">0 — 1023</div>
+          <div class="threshold-indicator">
+            <div class="threshold-bar">
+              <div class="threshold-fill" id="ldr-bar" style="width: 0%"></div>
+            </div>
+            <div class="threshold-labels">
+              <span>0</span>
+              <span>Umbral</span>
+              <span>1023</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta de LEDs -->
+        <div class="card">
+          <div class="card-header">
+            <h3>💡 ESTADO DE LEDs</h3>
+            <span class="badge">Salidas</span>
+          </div>
+          <div class="leds-container">
+            <div class="led-item">
+              <div class="led-info">
+                <span class="led-label">LED ROJO</span>
+                <span class="led-pin">A1</span>
+              </div>
+              <div class="led-value" id="led-rojo-valor">0</div>
+              <div class="led-indicator" id="led-rojo-indicator"></div>
+            </div>
+            <div class="led-item">
+              <div class="led-info">
+                <span class="led-label">LED VERDE</span>
+                <span class="led-pin">A2</span>
+              </div>
+              <div class="led-value" id="led-verde-valor">0</div>
+              <div class="led-indicator" id="led-verde-indicator"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta de modo -->
+        <div class="card">
+          <div class="card-header">
+            <h3>⚙️ MODO</h3>
+          </div>
+          <div class="mode-selector">
+            <div class="mode-option active">ANALOG</div>
+            <div class="mode-option">DIGITAL</div>
+          </div>
+          <div class="mode-info">
+            <span class="mode-label">Fuente:</span>
+            <span class="mode-value">A0 / Umbral dinámico</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta de información del sistema -->
+        <div class="card">
+          <div class="card-header">
+            <h3>🔌 INFORMACIÓN DEL SISTEMA</h3>
+          </div>
+          <div class="info-grid">
+            <div class="info-row">
+              <span class="info-label">Última actualización:</span>
+              <span class="info-value" id="ultima-actualizacion">--:--:--</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Enlace TCP:</span>
+              <span class="info-value">127.0.0.1:5001</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Puerto serial:</span>
+              <span class="info-value">/dev/ttyACM0 @ 115200</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel derecho - Gráfica -->
+      <div class="right-panel">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3>📈 MONITOREO EN TIEMPO REAL</h3>
+            <div class="chart-controls">
+              <span class="badge">Captura activa</span>
+              <span class="badge">A0 / Umbral</span>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="mainChart"></canvas>
+          </div>
+          <div class="chart-footer">
+            <div class="chart-legend">
+              <span class="legend-item">
+                <span class="legend-color red"></span> LED Rojo (A1)
+              </span>
+              <span class="legend-item">
+                <span class="legend-color green"></span> LED Verde (A2)
+              </span>
+              <span class="legend-item">
+                <span class="legend-color threshold"></span> Umbral LDR
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
 </body>
 </html>
