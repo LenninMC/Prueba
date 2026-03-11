@@ -8,33 +8,46 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="top">
-    <h1>Control LEDs y gráficas</h1>
-    <a class="logout" href="/logout">Salir</a>
+  <div class="container">
+    <header>
+      <h1>📊 Monitoreo de LEDs</h1>
+      <a class="logout-btn" href="/logout">Cerrar sesión</a>
+    </header>
+
+    <main>
+      <!-- Tarjetas de estado actual -->
+      <div class="stats-grid">
+        <div class="stat-card red">
+          <div class="stat-title">LED Rojo</div>
+          <div class="stat-value" id="valor-rojo">0</div>
+          <div class="stat-label">valor analógico</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-title">LED Verde</div>
+          <div class="stat-value" id="valor-verde">0</div>
+          <div class="stat-label">valor analógico</div>
+        </div>
+      </div>
+
+      <!-- Gráficas -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h2>LED Rojo <span class="badge">últimos 20 valores</span></h2>
+          <canvas id="chartRojo" width="400" height="200"></canvas>
+        </div>
+        <div class="chart-card">
+          <h2>LED Verde <span class="badge">últimos 20 valores</span></h2>
+          <canvas id="chartVerde" width="400" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- Log de eventos (opcional, lo puedes ocultar si quieres) -->
+      <div class="log-card">
+        <h3>📋 Registro</h3>
+        <pre id="log">Esperando datos...</pre>
+      </div>
+    </main>
   </div>
-
-  <div class="row">
-    <div>
-      <h3>LED Rojo</h3>
-      <button class="btn-red-on">Encender</button>
-      <button class="btn-red-off">Apagar</button>
-      <p><em>(si el hardware lo permite)</em></p>
-    </div>
-    <div>
-      <h3>LED Verde</h3>
-      <button class="btn-green-on">Encender</button>
-      <button class="btn-green-off">Apagar</button>
-      <p><em>(si el hardware lo permite)</em></p>
-    </div>
-  </div>
-
-  <h2>LED Rojo</h2>
-  <canvas id="chartRojo" width="400" height="200"></canvas>
-
-  <h2>LED Verde</h2>
-  <canvas id="chartVerde" width="400" height="200"></canvas>
-
-  <pre id="log"></pre>
 
   <script src="/static/js/app.js"></script>
 </body>
